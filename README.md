@@ -1,6 +1,15 @@
 # Fossify Messages
 <img alt="Logo" src="graphics/icon.webp" width="120" />
 
+> **This is a fork, not the official Fossify Messages app.**
+> It is maintained by [@epsalon](https://github.com/epsalon) and forked from [FossifyOrg/Messages](https://github.com/FossifyOrg/Messages), which remains the upstream project. The fork is licensed under the same GPLv3 license.
+>
+> The fork adds an experimental **spam filter** for messages with a Stop2End opt-out directive (such as "Reply STOP to end"), plus an optional automatic STOP reply. Spam from these senders is stored without a notification. The filter runs on the device, and it can ask an OpenRouter decision model for a second opinion when you add an API key in **Settings → Spam filter**. Without a key, only the on-device model runs.
+>
+> Because the optional second opinion sends message text to OpenRouter, the upstream claim that the app works without an internet connection does not hold for this fork once a key is set. Contacts are never sent. Numbers, amounts, codes, URLs and personal names are redacted first.
+>
+> Please do not report issues from this fork to the upstream project.
+
 <a href='https://play.google.com/store/apps/details?id=org.fossify.messages'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a> <a href="https://f-droid.org/packages/org.fossify.messages/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-en.svg" alt="Get it on F-Droid" height=80/></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.fossify.messages"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height=80/></a>
 
 Fossify Messages is your trusted messaging companion, designed to enhance your messaging experience in various ways.
