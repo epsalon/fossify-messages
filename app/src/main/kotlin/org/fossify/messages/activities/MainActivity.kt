@@ -81,6 +81,7 @@ class MainActivity : SimpleActivity() {
 
     private var storedTextColor = 0
     private var storedFontSize = 0
+    private var storedHideLetterAvatars = false
     private var lastSearchedText = ""
     private var bus: EventBus? = null
 
@@ -118,6 +119,11 @@ class MainActivity : SimpleActivity() {
 
             if (storedFontSize != config.fontSize) {
                 updateFontSize()
+            }
+
+            // Avatars are bound in the list, so a changed setting needs the rows redrawn
+            if (storedHideLetterAvatars != config.hideLetterAvatars) {
+                notifyDataSetChanged()
             }
 
             updateDrafts()
@@ -208,6 +214,7 @@ class MainActivity : SimpleActivity() {
     private fun storeStateVariables() {
         storedTextColor = getProperTextColor()
         storedFontSize = config.fontSize
+        storedHideLetterAvatars = config.hideLetterAvatars
     }
 
     private fun updateMenuColors() {
