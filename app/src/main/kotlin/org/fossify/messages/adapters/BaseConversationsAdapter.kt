@@ -199,12 +199,17 @@ abstract class BaseConversationsAdapter(
                 null
             }
 
-            SimpleContactsHelper(activity).loadContactImage(
-                path = conversation.photoUri,
-                imageView = conversationImage,
-                placeholderName = conversation.title,
-                placeholderImage = placeholder
-            )
+            // With letter avatars hidden, a sender without a photo gets no image at all
+            val hideAvatar = activity.config.hideLetterAvatars && placeholder == null && conversation.photoUri.isEmpty()
+            conversationImage.beVisibleIf(!hideAvatar)
+            if (!hideAvatar) {
+                SimpleContactsHelper(activity).loadContactImage(
+                    path = conversation.photoUri,
+                    imageView = conversationImage,
+                    placeholderName = conversation.title,
+                    placeholderImage = placeholder
+                )
+            }
         }
     }
 

@@ -93,6 +93,7 @@
     <string name="blocked_keywords">Blocked keywords</string>
     <string name="manage_blocked_keywords">Manage blocked keywords</string>
     <string name="spam_filter">Spam filter</string>
+    <string name="hide_letter_avatars">Hide letter avatars</string>
     <string name="spam_filter_enabled">Filter spam</string>
     <string name="spam_filter_enabled_summary">Messages with an opt-out directive (such as \"Reply STOP to end\") are checked. Spam is stored without a notification. Other messages always notify.</string>
     <string name="auto_stop_enabled">Auto-reply STOP to spam</string>

@@ -272,6 +272,21 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/settings_hide_letter_avatars_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_hide_letter_avatars"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hide_letter_avatars" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings_use_simple_characters_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"

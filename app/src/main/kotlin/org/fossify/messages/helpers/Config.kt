@@ -96,6 +96,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getString(OPENROUTER_API_KEY, "") ?: ""
         set(key) = prefs.edit().putString(OPENROUTER_API_KEY, key).apply()
 
+    var hideLetterAvatars: Boolean
+        get() = prefs.getBoolean(HIDE_LETTER_AVATARS, false)
+        set(hide) = prefs.edit().putBoolean(HIDE_LETTER_AVATARS, hide).apply()
+
     var openRouterDecisionModel: String
         get() = prefs.getString(OPENROUTER_DECISION_MODEL, OpenRouterDecisions.DEFAULT_MODEL) ?: OpenRouterDecisions.DEFAULT_MODEL
         set(model) = prefs.edit().putString(OPENROUTER_DECISION_MODEL, model).apply()

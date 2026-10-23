@@ -420,7 +420,8 @@ class ThreadAdapter(
                 applyTo(threadMessageHolder)
             }
 
-            threadMessageSenderPhoto.beVisible()
+            val hideLetter = activity.config.hideLetterAvatars && message.senderPhotoUri.isEmpty()
+            threadMessageSenderPhoto.beVisibleIf(!hideLetter)
             threadMessageSenderPhoto.setOnClickListener {
                 val contact = message.getSender()!!
                 activity.getContactFromAddress(contact.phoneNumbers.first().normalizedNumber) {
@@ -436,7 +437,7 @@ class ThreadAdapter(
                 setLinkTextColor(activity.getProperPrimaryColor())
             }
 
-            if (!activity.isFinishing && !activity.isDestroyed) {
+            if (!hideLetter && !activity.isFinishing && !activity.isDestroyed) {
                 val contactLetterIcon = SimpleContactsHelper(activity).getContactLetterIcon(message.senderName)
                 val placeholder = contactLetterIcon.toDrawable(activity.resources)
 

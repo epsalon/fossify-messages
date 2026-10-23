@@ -107,6 +107,7 @@ class SettingsActivity : SimpleActivity() {
         setupChangeDateTimeFormat()
         setupFontSize()
         setupShowCharacterCounter()
+        setupHideLetterAvatars()
         setupUseSimpleCharacters()
         setupSendOnEnter()
         setupEnableDeliveryReports()
@@ -262,6 +263,14 @@ class SettingsActivity : SimpleActivity() {
         settingsShowCharacterCounterHolder.setOnClickListener {
             settingsShowCharacterCounter.toggle()
             config.showCharacterCounter = settingsShowCharacterCounter.isChecked
+        }
+    }
+
+    private fun setupHideLetterAvatars() = binding.apply {
+        settingsHideLetterAvatars.isChecked = config.hideLetterAvatars
+        settingsHideLetterAvatarsHolder.setOnClickListener {
+            settingsHideLetterAvatars.toggle()
+            config.hideLetterAvatars = settingsHideLetterAvatars.isChecked
         }
     }
 
