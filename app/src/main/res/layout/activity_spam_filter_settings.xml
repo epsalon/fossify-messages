@@ -123,13 +123,17 @@
                 android:paddingEnd="@dimen/activity_margin"
                 android:text="@string/decision_model" />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            <org.fossify.commons.views.MyTextView
                 android:id="@+id/decision_model"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:paddingStart="@dimen/activity_margin"
-                android:paddingEnd="@dimen/activity_margin" />
+                android:paddingTop="@dimen/activity_margin"
+                android:paddingEnd="@dimen/activity_margin"
+                android:paddingBottom="@dimen/activity_margin" />
 
             <org.fossify.commons.views.MyTextView
                 android:id="@+id/decision_model_status"

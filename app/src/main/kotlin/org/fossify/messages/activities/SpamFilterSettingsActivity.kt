@@ -5,7 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.ArrayAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
@@ -98,25 +99,41 @@ class SpamFilterSettingsActivity : SimpleActivity() {
     }
 
     private fun loadDecisionModels() {
-        val current = config.openRouterDecisionModel
-        binding.decisionModel.setText(current, false)
+        showSelectedModel()
+        binding.decisionModel.setOnClickListener { showModelPicker() }
         ensureBackgroundThread {
             val result = runCatching { OpenRouterCatalog.decisionModels() }
             runOnUiThread {
                 result.onSuccess { list ->
                     decisionModels = list
-                    binding.decisionModel.setAdapter(
-                        ArrayAdapter(this, android.R.layout.simple_list_item_1, list.map(::label))
-                    )
-                    binding.decisionModel.setText(list.firstOrNull { it.id == current }?.let(::label) ?: current, false)
-                    binding.decisionModel.setOnItemClickListener { _, _, position, _ ->
-                        config.openRouterDecisionModel = decisionModels[position].id
-                    }
+                    showSelectedModel()
                 }.onFailure {
                     binding.decisionModelStatus.text = getString(R.string.decision_models_failed)
                 }
             }
         }
+    }
+
+    private fun showSelectedModel() {
+        val current = config.openRouterDecisionModel
+        binding.decisionModel.text = decisionModels.firstOrNull { it.id == current }?.let(::label) ?: current
+    }
+
+    private fun showModelPicker() {
+        if (decisionModels.isEmpty()) {
+            toast(R.string.decision_models_failed)
+            return
+        }
+        val current = config.openRouterDecisionModel
+        val checked = decisionModels.indexOfFirst { it.id == current }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.decision_model)
+            .setSingleChoiceItems(decisionModels.map(::label).toTypedArray(), checked) { dialog, which ->
+                config.openRouterDecisionModel = decisionModels[which].id
+                showSelectedModel()
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun label(model: DecisionModel) = "${model.id}  ·  ${model.priceLabel}"
