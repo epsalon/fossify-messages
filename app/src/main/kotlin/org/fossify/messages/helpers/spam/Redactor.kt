@@ -22,7 +22,8 @@ object Redactor {
             val list = JSONObject(json).getJSONArray("rules")
             (0 until list.length()).map { i ->
                 val rule = list.getJSONArray(i)
-                var flags = Pattern.UNICODE_CHARACTER_CLASS
+                // Android's regex engine rejects Pattern.UNICODE_CHARACTER_CLASS, so the flags stop there
+                var flags = 0
                 if (rule.getString(2).contains("i")) flags = flags or Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
                 Rule(Pattern.compile(rule.getString(0), flags), rule.getString(1))
             }

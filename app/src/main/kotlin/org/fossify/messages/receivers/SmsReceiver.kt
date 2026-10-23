@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import android.util.Log
 import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.getMyContactsCursor
 import org.fossify.commons.extensions.isNumberBlocked
@@ -30,6 +31,10 @@ import org.fossify.messages.models.Message
 
 class SmsReceiver : BroadcastReceiver() {
 
+    companion object {
+        private const val TAG = "SmsReceiver"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         val pending = goAsync()
         val appContext = context.applicationContext
@@ -37,6 +42,7 @@ class SmsReceiver : BroadcastReceiver() {
         ensureBackgroundThread {
             try {
                 val parts = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                Log.i(TAG, "onReceive: action=${intent.action} parts=${parts.size}")
                 if (parts.isEmpty()) return@ensureBackgroundThread
 
                 // this is how it has always worked, but need to revisit this.
@@ -45,40 +51,52 @@ class SmsReceiver : BroadcastReceiver() {
                 val subject = parts.last().pseudoSubject.orEmpty()
                 val status = parts.last().status
                 val body = buildString { parts.forEach { append(it.messageBody.orEmpty()) } }
-
-                if (isMessageFilteredOut(appContext, body)) return@ensureBackgroundThread
-                if (appContext.isNumberBlocked(address)) return@ensureBackgroundThread
-                if (appContext.baseConfig.blockUnknownNumbers) {
-                    val privateCursor =
-                        appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
-                    val result = SimpleContactsHelper(appContext).existsSync(address, privateCursor)
-                    if (result == ContactLookupResult.NotFound) return@ensureBackgroundThread
-                }
-
-                val date = System.currentTimeMillis()
-                val threadId = appContext.getThreadId(address)
                 val subscriptionId = intent.getIntExtra("subscription", -1)
 
-                val isContact = appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
-                    SimpleContactsHelper(appContext).existsSync(address, it) != ContactLookupResult.NotFound
-                }
-                val spam = SpamFilter.evaluate(appContext, address, body, isContact, subscriptionId)
-
-                handleMessageSync(
-                    context = appContext,
-                    address = address,
-                    subject = subject,
-                    body = body,
-                    date = date,
-                    threadId = threadId,
-                    subscriptionId = subscriptionId,
-                    status = status,
-                    notify = spam.verdict == SpamFilter.Verdict.NOTIFY
-                )
+                process(appContext, address, subject, body, status, subscriptionId)
             } finally {
                 pending.finish()
             }
         }
+    }
+
+    /** Filters, classifies, and stores one incoming message. Call from a background thread. */
+    internal fun process(
+        appContext: Context,
+        address: String,
+        subject: String,
+        body: String,
+        status: Int,
+        subscriptionId: Int
+    ) {
+        if (isMessageFilteredOut(appContext, body)) return
+        if (appContext.isNumberBlocked(address)) return
+        if (appContext.baseConfig.blockUnknownNumbers) {
+            val privateCursor =
+                appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
+            val result = SimpleContactsHelper(appContext).existsSync(address, privateCursor)
+            if (result == ContactLookupResult.NotFound) return
+        }
+
+        val date = System.currentTimeMillis()
+        val threadId = appContext.getThreadId(address)
+
+        val isContact = appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
+            SimpleContactsHelper(appContext).existsSync(address, it) != ContactLookupResult.NotFound
+        }
+        val spam = SpamFilter.evaluate(appContext, address, body, isContact, subscriptionId)
+
+        handleMessageSync(
+            context = appContext,
+            address = address,
+            subject = subject,
+            body = body,
+            date = date,
+            threadId = threadId,
+            subscriptionId = subscriptionId,
+            status = status,
+            notify = spam.verdict == SpamFilter.Verdict.NOTIFY
+        )
     }
 
     private fun handleMessageSync(

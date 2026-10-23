@@ -71,13 +71,16 @@ object SpamFilter {
     ): Result {
         val config = Config.newInstance(context)
         val directive = Stop2EndDetector.detect(body)
+        Log.i(TAG, "evaluate: directive=$directive enabled=${config.spamFilterEnabled} autoStop=${config.autoStopEnabled}")
         val outcome = try {
             ensureLoaded(context)
             decide(context, config, sender, body, isContact, directive)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+            // Throwable, not Exception: a failed static initializer surfaces as an Error and must not crash the receiver
             Log.e(TAG, "Spam decision failed, notifying", e)
             Outcome(Verdict.NOTIFY, "error: ${e.message}")
         }
+        Log.i(TAG, "decision: verdict=${outcome.verdict} reason=${outcome.reason}")
 
         var stopSent = false
         if (outcome.verdict == Verdict.SPAM && directive != Stop2EndDetector.Directive.NONE && config.autoStopEnabled) {
@@ -99,7 +102,8 @@ object SpamFilter {
                     stopSent = stopSent
                 )
             )
-        }.onFailure { Log.e(TAG, "Could not write decision log", it) }
+        }.onSuccess { Log.i(TAG, "decision logged, stopSent=$stopSent") }
+            .onFailure { Log.e(TAG, "Could not write decision log", it) }
 
         return Result(outcome.verdict, outcome.reason, stopSent)
     }

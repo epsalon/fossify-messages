@@ -11,3 +11,6 @@ keystore.properties
 fastlane/fastlane.json
 fastlane/report.xml
 .kotlin/
+
+# Throwaway experiments and personal data, never commit
+_scratch/

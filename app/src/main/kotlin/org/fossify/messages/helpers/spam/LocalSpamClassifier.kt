@@ -47,8 +47,9 @@ class LocalSpamClassifier private constructor(
     }
 
     companion object {
-        // Same token pattern as the training run: \b[\w<>']+\b with Unicode classes
-        private val TOKEN: Pattern = Pattern.compile("\\b[\\w<>']+\\b", Pattern.UNICODE_CHARACTER_CLASS)
+        // Same token pattern as the training run (\b[\w<>']+\b with Unicode classes). Android's regex
+        // engine rejects Pattern.UNICODE_CHARACTER_CLASS, so the Unicode letter, number and mark classes are spelled out.
+        private val TOKEN: Pattern = Pattern.compile("\\b[\\p{L}\\p{N}\\p{M}_<>']+\\b")
         private const val ASSET = "spam_model/model.json"
 
         fun fromAsset(context: Context): LocalSpamClassifier? = runCatching {

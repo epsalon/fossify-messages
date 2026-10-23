@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
@@ -48,11 +49,20 @@ class SpamFilterSettingsActivity : SimpleActivity() {
 
     private fun setupSettings() = binding.apply {
         spamFilterEnabled.isChecked = config.spamFilterEnabled
+        spamFilterEnabledHolder.setOnClickListener {
+            spamFilterEnabled.toggle()
+            config.spamFilterEnabled = spamFilterEnabled.isChecked
+        }
         autoStopEnabled.isChecked = config.autoStopEnabled
+        autoStopHolder.setOnClickListener {
+            autoStopEnabled.toggle()
+            config.autoStopEnabled = autoStopEnabled.isChecked
+        }
         openrouterApiKey.setText(config.openRouterApiKey)
     }
 
     private fun saveSettings() = binding.apply {
+        Log.i(TAG, "save: filter=${spamFilterEnabled.isChecked} autoStop=${autoStopEnabled.isChecked}")
         config.spamFilterEnabled = spamFilterEnabled.isChecked
         config.autoStopEnabled = autoStopEnabled.isChecked
         config.openRouterApiKey = openrouterApiKey.text.toString().trim()
@@ -139,6 +149,7 @@ class SpamFilterSettingsActivity : SimpleActivity() {
     private fun label(model: DecisionModel) = "${model.id}  ·  ${model.priceLabel}"
 
     companion object {
+        private const val TAG = "SpamFilterSettings"
         private const val KEY_CHECK_DELAY_MS = 800L
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Debug builds only: lets adb inject a test SMS. See DebugSmsInjector. -->
+    <application>
+        <receiver
+            android:name=".receivers.DebugSmsInjector"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.fossify.messages.debug.INJECT_SMS" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
