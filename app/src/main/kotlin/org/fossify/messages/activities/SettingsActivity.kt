@@ -103,6 +103,7 @@ class SettingsActivity : SimpleActivity() {
         setupLanguage()
         setupManageBlockedNumbers()
         setupManageBlockedKeywords()
+        setupSpamFilter()
         setupChangeDateTimeFormat()
         setupFontSize()
         setupShowCharacterCounter()
@@ -214,6 +215,15 @@ class SettingsActivity : SimpleActivity() {
 
         settingsManageBlockedKeywordsHolder.setOnClickListener {
             Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
+                startActivity(this)
+            }
+        }
+    }
+
+    private fun setupSpamFilter() = binding.apply {
+        settingsSpamFilter.text = getString(R.string.spam_filter)
+        settingsSpamFilterHolder.setOnClickListener {
+            Intent(this@SettingsActivity, SpamFilterSettingsActivity::class.java).apply {
                 startActivity(this)
             }
         }

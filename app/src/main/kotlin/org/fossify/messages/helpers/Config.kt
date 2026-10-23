@@ -3,6 +3,7 @@ package org.fossify.messages.helpers
 import android.content.Context
 import org.fossify.commons.helpers.BaseConfig
 import org.fossify.messages.extensions.getDefaultKeyboardHeight
+import org.fossify.messages.helpers.spam.OpenRouterDecisions
 import org.fossify.messages.models.Conversation
 
 class Config(context: Context) : BaseConfig(context) {
@@ -82,6 +83,22 @@ class Config(context: Context) : BaseConfig(context) {
     var blockedKeywords: Set<String>
         get() = prefs.getStringSet(BLOCKED_KEYWORDS, HashSet<String>())!!
         set(blockedKeywords) = prefs.edit().putStringSet(BLOCKED_KEYWORDS, blockedKeywords).apply()
+
+    var spamFilterEnabled: Boolean
+        get() = prefs.getBoolean(SPAM_FILTER_ENABLED, true)
+        set(enabled) = prefs.edit().putBoolean(SPAM_FILTER_ENABLED, enabled).apply()
+
+    var autoStopEnabled: Boolean
+        get() = prefs.getBoolean(AUTO_STOP_ENABLED, true)
+        set(enabled) = prefs.edit().putBoolean(AUTO_STOP_ENABLED, enabled).apply()
+
+    var openRouterApiKey: String
+        get() = prefs.getString(OPENROUTER_API_KEY, "") ?: ""
+        set(key) = prefs.edit().putString(OPENROUTER_API_KEY, key).apply()
+
+    var openRouterDecisionModel: String
+        get() = prefs.getString(OPENROUTER_DECISION_MODEL, OpenRouterDecisions.DEFAULT_MODEL) ?: OpenRouterDecisions.DEFAULT_MODEL
+        set(model) = prefs.edit().putString(OPENROUTER_DECISION_MODEL, model).apply()
 
     fun addBlockedKeyword(keyword: String) {
         blockedKeywords = blockedKeywords.plus(keyword)

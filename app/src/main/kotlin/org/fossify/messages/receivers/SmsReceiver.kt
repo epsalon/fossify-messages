@@ -23,6 +23,7 @@ import org.fossify.messages.extensions.shouldUnarchive
 import org.fossify.messages.extensions.showReceivedMessageNotification
 import org.fossify.messages.extensions.updateConversationArchivedStatus
 import org.fossify.messages.helpers.ReceiverUtils.isMessageFilteredOut
+import org.fossify.messages.helpers.spam.SpamFilter
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
 import org.fossify.messages.models.Message
@@ -58,6 +59,11 @@ class SmsReceiver : BroadcastReceiver() {
                 val threadId = appContext.getThreadId(address)
                 val subscriptionId = intent.getIntExtra("subscription", -1)
 
+                val isContact = appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
+                    SimpleContactsHelper(appContext).existsSync(address, it) != ContactLookupResult.NotFound
+                }
+                val spam = SpamFilter.evaluate(appContext, address, body, isContact, subscriptionId)
+
                 handleMessageSync(
                     context = appContext,
                     address = address,
@@ -66,7 +72,8 @@ class SmsReceiver : BroadcastReceiver() {
                     date = date,
                     threadId = threadId,
                     subscriptionId = subscriptionId,
-                    status = status
+                    status = status,
+                    notify = spam.verdict == SpamFilter.Verdict.NOTIFY
                 )
             } finally {
                 pending.finish()
@@ -84,7 +91,8 @@ class SmsReceiver : BroadcastReceiver() {
         threadId: Long,
         type: Int = Telephony.Sms.MESSAGE_TYPE_INBOX,
         subscriptionId: Int,
-        status: Int
+        status: Int,
+        notify: Boolean = true
     ) {
         val photoUri = SimpleContactsHelper(context).getPhotoUriFromPhoneNumber(address)
         val bitmap = context.getNotificationBitmap(photoUri)
@@ -143,7 +151,7 @@ class SmsReceiver : BroadcastReceiver() {
 
         refreshMessages()
         refreshConversations()
-        context.showReceivedMessageNotification(
+        if (notify) context.showReceivedMessageNotification(
             messageId = newMessageId,
             isMms = false,
             address = address,
